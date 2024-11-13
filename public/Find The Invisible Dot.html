@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find the Invisible Target Game</title>
+    <style>
+        /* Style the game area */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        #gameArea {
+            position: relative;
+            width: 90vw;
+            height: 80vh;
+            border: 3px solid #333;
+            overflow: hidden;
+        }
+        #victoryMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: green;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="victoryMessage">You Found It!</div>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const victoryMessage = document.getElementById('victoryMessage');
+
+        // Generate random target position within game area
+        const targetX = Math.floor(Math.random() * gameArea.clientWidth);
+        const targetY = Math.floor(Math.random() * gameArea.clientHeight);
+
+        // Set the max distance (diagonal of the game area) for calculating proximity
+        const maxDistance = Math.hypot(gameArea.clientWidth, gameArea.clientHeight);
+
+        // Function to calculate distance between mouse and target
+        function getDistance(mouseX, mouseY) {
+            return Math.hypot(mouseX - targetX, mouseY - targetY);
+        }
+
+        // Event listener for mouse movement
+        gameArea.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX - gameArea.getBoundingClientRect().left;
+            const mouseY = e.clientY - gameArea.getBoundingClientRect().top;
+            const distance = getDistance(mouseX, mouseY);
+
+            // Change background color based on proximity
+            const proximity = 1 - (distance / maxDistance); // Proximity value between 0 and 1
+            const intensity = Math.floor(proximity * 255);
+            gameArea.style.backgroundColor = `rgb(${255 - intensity}, ${intensity}, 150)`;
+
+            // Show victory message if close enough
+            if (distance < 20) {  // Adjust this value to control detection accuracy
+                victoryMessage.style.display = 'block';
+                gameArea.style.backgroundColor = 'lightgreen';
+            }
+        });
+
+        // Restart game on click
+        gameArea.addEventListener('click', () => {
+            location.reload();  // Reloads the game to reset
+        });
+    </script>
+</body>
+</html>
